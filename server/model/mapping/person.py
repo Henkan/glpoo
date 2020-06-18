@@ -15,8 +15,13 @@ class Person(Base):
     firstname = Column(String(50), nullable=False)
     lastname = Column(String(50), nullable=False)
     email = Column(String(256), nullable=False)
-
+    person_type = Column(String(50), nullable=False)
     sports = relationship("SportAssociation", back_populates="person")
+    
+    __mapper_args__ = {
+        'polymorphic_identity': 'person',
+        'polymorphic_on': person_type
+    }
 
     def __repr__(self):
         return "<Person(%s %s)>" % (self.firstname, self.lastname.upper())
