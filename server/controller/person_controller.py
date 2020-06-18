@@ -1,6 +1,7 @@
 import re
 
 from model.dao.person_dao import PersonDAO
+from model.dao.sport_dao import SportDAO
 from exceptions import Error, InvalidData
 
 
@@ -45,7 +46,6 @@ class PersonController:
             raise e
 
     def update_person(self, person_id, person_data):
-
         self._check_profile_data(person_data, update=True)
         with self._database_engine.new_session() as session:
             person_dao = PersonDAO(session)
@@ -54,19 +54,34 @@ class PersonController:
             return person.to_dict()
 
     def delete_person(self, person_id):
-
         with self._database_engine.new_session() as session:
             person_dao = PersonDAO(session)
             person = person_dao.get(person_id)
             person_dao.delete(person)
 
     def search_person(self, firstname, lastname):
-
         # Query database
         with self._database_engine.new_session() as session:
             person_dao = PersonDAO(session)
             person = person_dao.get_by_name(firstname, lastname)
             return person.to_dict()
+
+    def add_person_sport(self, person_id, sport_id, level):
+        with self._database_engine.new_session() as session:
+            person_dao = PersonDAO(session)
+            person = person_dao.get(person_id)
+            sport_dao = SportDAO(session)
+            sport = sport_dao.get(sport_id)
+            person.add_sport(sport, level, session)
+
+    def delete_person_sport(self, person_id, sport_id):
+        with self._database_engine.new_session() as session:
+            person_dao = PersonDAO(session)
+            person = person_dao.get(person_id)
+            sport_dao = SportDAO(session)
+            sport = sport_dao.get(sport_id)
+            person.delete_sport(sport, session)
+
 
     def _check_profile_data(self, data, update=False):
         name_pattern = re.compile("^[\S-]{2,50}$")

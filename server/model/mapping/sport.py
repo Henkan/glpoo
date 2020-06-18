@@ -13,6 +13,8 @@ class Sport(Base):
     name = Column(String(50), nullable=False)
     description = Column(String(256), nullable=True)
 
+    persons = relationship("SportAssociation", back_populates="sport")
+
     def __repr__(self):
         return "<Sport(%s : %s)>" % (self.name, self.description)
 
@@ -23,13 +25,6 @@ class Sport(Base):
             "description": self.description
         }
 
-    def add_person(self, person, level, session):
-        association = SportAssociation(level=level)
-        association.sport_id = self.id
-        association.persons = person
-        # self.sports.append(association)
-        session.flush()
-
 
 class SportAssociation(Base):
     __tablename__ = 'sportassociation'
@@ -37,6 +32,6 @@ class SportAssociation(Base):
 
     person_id = Column(String(36), ForeignKey('person.id'), primary_key=True)
     sport_id = Column(String(36), ForeignKey('sport.id'), primary_key=True)
-    persons = relationship("Person", back_populates="sports")
-    sports = relationship("Sport", back_populates="persons")
+    person = relationship("Person", back_populates="sports")
+    sport = relationship("Sport", back_populates="persons")
     level = Column(String(50), nullable=False)

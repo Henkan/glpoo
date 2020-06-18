@@ -16,7 +16,7 @@ class Person(Base):
     lastname = Column(String(50), nullable=False)
     email = Column(String(256), nullable=False)
 
-    sports = relationship("SportAssociation", back_populates="persons")
+    sports = relationship("SportAssociation", back_populates="person")
 
     def __repr__(self):
         return "<Person(%s %s)>" % (self.firstname, self.lastname.upper())
@@ -31,7 +31,15 @@ class Person(Base):
 
     def add_sport(self, sport, level, session):
         association = SportAssociation(level=level)
-        association.sports = sport
+        association.sport = sport
         association.person_id = self.id
-        # self.sports.append(association)
         session.flush()
+
+    def delete_sport(self, sport, session):
+        for association in self.sports:
+            if association.sport == sport:
+                self.sports.remove(association)
+                session.delete(association)
+                session.flush()
+                break
+
