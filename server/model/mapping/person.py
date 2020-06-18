@@ -22,12 +22,16 @@ class Person(Base):
         return "<Person(%s %s)>" % (self.firstname, self.lastname.upper())
 
     def to_dict(self):
-        return {
+        data = {
             "id": self.id,
             "firstname": self.firstname,
             "lastname": self.lastname,
-            "email": self.email
+            "email": self.email,
+            "sports": []
         }
+        for association in self.sports:
+            data.get("sports").append({"name": association.sport.name, "level": association.level})
+        return data
 
     def add_sport(self, sport, level, session):
         association = SportAssociation(level=level)
@@ -42,4 +46,3 @@ class Person(Base):
                 session.delete(association)
                 session.flush()
                 break
-
