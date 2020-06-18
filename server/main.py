@@ -1,7 +1,7 @@
 
 from flask import Flask
 from model.database import DatabaseEngine
-from vue.member_resource import member_resource
+from vue.person_resource import person_resource
 
 
 def main():
@@ -13,7 +13,7 @@ def main():
 
     # Start api
     app = Flask(__name__)
-    app.register_blueprint(member_resource)
+    app.register_blueprint(person_resource)
     app.run(host="0.0.0.0", port=5000)
 
 

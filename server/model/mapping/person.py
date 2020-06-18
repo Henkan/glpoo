@@ -4,8 +4,8 @@ import uuid
 from sqlalchemy import Column, String, UniqueConstraint
 
 
-class Member(Base):
-    __tablename__ = 'members'
+class Person(Base):
+    __tablename__ = 'person'
     __table_args__ = (UniqueConstraint('firstname', 'lastname'),)
 
     id = Column(String(36), default=str(uuid.uuid4()), primary_key=True)
@@ -16,7 +16,7 @@ class Member(Base):
     email = Column(String(256), nullable=False)
 
     def __repr__(self):
-        return "<Member(%s %s)>" % (self.firstname, self.lastname.upper())
+        return "<Person(%s %s)>" % (self.firstname, self.lastname.upper())
 
     def to_dict(self):
         return {

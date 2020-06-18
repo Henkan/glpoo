@@ -1,72 +1,72 @@
 import re
 
-from model.dao.member_dao import MemberDAO
+from model.dao.person_dao import PersonDAO
 from exceptions import Error, InvalidData
 
 
-class MemberController:
+class PersonController:
     """
-    Member actions
+    Person actions
     """
 
     def __init__(self, database_engine):
         self._database_engine = database_engine
         self._frames = []
 
-    def list_members(self):
+    def list_persons(self):
         with self._database_engine.new_session() as session:
-            members = MemberDAO(session).get_all()
-            members_data = [member.to_dict() for member in members]
-        return members_data
+            persons = PersonDAO(session).get_all()
+            persons_data = [person.to_dict() for person in persons]
+        return persons_data
 
-    def get_member(self, member_id):
+    def get_person(self, person_id):
         with self._database_engine.new_session() as session:
-            member = MemberDAO(session).get(member_id)
-            member_data = member.to_dict()
-        return member_data
+            person = PersonDAO(session).get(person_id)
+            person_data = person.to_dict()
+        return person_data
 
-    def get_member_by_name(self, firstname, lastname):
+    def get_person_by_name(self, firstname, lastname):
         with self._database_engine.new_session() as session:
-            member = MemberDAO(session).get_by_name(firstname, lastname)
-            member_data = member.to_dict()
-        return member_data
+            person = PersonDAO(session).get_by_name(firstname, lastname)
+            person_data = person.to_dict()
+        return person_data
 
-    def create_member(self, data):
+    def create_person(self, data):
 
         self._check_profile_data(data)
         try:
             with self._database_engine.new_session() as session:
-                # Save member in database
-                member = MemberDAO(session).create(data)
-                member_data = member.to_dict()
-                return member_data
+                # Save person in database
+                person = PersonDAO(session).create(data)
+                person_data = person.to_dict()
+                return person_data
         except Error as e:
             # log error
             raise e
 
-    def update_member(self, member_id, member_data):
+    def update_person(self, person_id, person_data):
 
-        self._check_profile_data(member_data, update=True)
+        self._check_profile_data(person_data, update=True)
         with self._database_engine.new_session() as session:
-            member_dao = MemberDAO(session)
-            member = member_dao.get(member_id)
-            member = member_dao.update(member, member_data)
-            return member.to_dict()
+            person_dao = PersonDAO(session)
+            person = person_dao.get(person_id)
+            person = person_dao.update(person, person_data)
+            return person.to_dict()
 
-    def delete_member(self, member_id):
+    def delete_person(self, person_id):
 
         with self._database_engine.new_session() as session:
-            member_dao = MemberDAO(session)
-            member = member_dao.get(member_id)
-            member_dao.delete(member)
+            person_dao = PersonDAO(session)
+            person = person_dao.get(person_id)
+            person_dao.delete(person)
 
-    def search_member(self, firstname, lastname):
+    def search_person(self, firstname, lastname):
 
         # Query database
         with self._database_engine.new_session() as session:
-            member_dao = MemberDAO(session)
-            member = member_dao.get_by_name(firstname, lastname)
-            return member.to_dict()
+            person_dao = PersonDAO(session)
+            person = person_dao.get_by_name(firstname, lastname)
+            return person.to_dict()
 
     def _check_profile_data(self, data, update=False):
         name_pattern = re.compile("^[\S-]{2,50}$")
