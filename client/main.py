@@ -8,61 +8,61 @@ def main():
     parser.add_argument('--url', help="Application url", default="http://localhost:5000")
     subparsers = parser.add_subparsers(help='actions', dest='action')
 
-    subparsers.add_parser('list', aliases=['ls'], description='List association members',
-                          help="Show association members")
+    subparsers.add_parser('list', aliases=['ls'], description='List association persons',
+                          help="Show association persons")
 
-    get_parser = subparsers.add_parser('get', aliases=['show'], description='Get association member',
-                                       help="Get member")
+    get_parser = subparsers.add_parser('get', aliases=['show'], description='Get association person',
+                                       help="Get person")
     get_parser.add_argument("firstname", help="Firstname")
     get_parser.add_argument("lastname", help="Lastname")
 
-    new_parser = subparsers.add_parser('new', aliases=['add', 'create'], description='Create new association member',
-                                       help="Create member")
+    new_parser = subparsers.add_parser('new', aliases=['add', 'create'], description='Create new association person',
+                                       help="Create person")
     new_parser.add_argument("firstname", help="Firstname")
     new_parser.add_argument("lastname", help="Lastname")
     new_parser.add_argument("email", help="Email address")
 
-    update_parser = subparsers.add_parser('update', aliases=['modify'], description='update association member',
-                                          help="Create member")
+    update_parser = subparsers.add_parser('update', aliases=['modify'], description='update association person',
+                                          help="Create person")
     update_parser.add_argument("identifier", help="id")
     update_parser.add_argument("--firstname", help="Update firstname", default=None)
     update_parser.add_argument("--lastname", help="Update lastname", default=None)
     update_parser.add_argument("--email", help="Update email address", default=None)
 
-    remove_parser = subparsers.add_parser('remove', aliases=['delete', 'rm'], description='Remove association member',
-                                          help="Remove member")
+    remove_parser = subparsers.add_parser('remove', aliases=['delete', 'rm'], description='Remove association person',
+                                          help="Remove person")
     remove_parser.add_argument("identifier", help="id")
 
     args = parser.parse_args()
     url = args.url
 
     if args.action in ['list', 'ls']:
-        res = requests.get(url + '/members')
-        members = json_response(res)
-        print("Members: ")
-        for member in members:
-            print("* %s %s (%s)" % (member['firstname'].capitalize(),
-                                    member['lastname'].capitalize(),
-                                    member['email']))
+        res = requests.get(url + '/persons')
+        persons = json_response(res)
+        print("Persons: ")
+        for person in persons:
+            print("* %s %s (%s)" % (person['firstname'].capitalize(),
+                                    person['lastname'].capitalize(),
+                                    person['email']))
     elif args.action in ['get', 'show']:
         firstname = args.firstname
         lastname = args.lastname
-        res = requests.get(url + '/members', params={"firstname": firstname, "lastname": lastname})
-        member = json_response(res)
+        res = requests.get(url + '/persons', params={"firstname": firstname, "lastname": lastname})
+        person = json_response(res)
 
-        show_member(member)
+        show_person(person)
     elif args.action in ['new', 'add', 'create']:
         data = {
             "firstname": args.firstname,
             "lastname": args.lastname,
             "email": args.email
         }
-        res = requests.post(url + '/members', json=data)
-        member = json_response(res)
-        show_member(member)
+        res = requests.post(url + '/persons', json=data)
+        person = json_response(res)
+        show_person(person)
     elif args.action in ['update', 'modify']:
 
-        member_id = args.identifier
+        person_id = args.identifier
 
         data = {}
         for key in ["firstname", "lastname", "email"]:
@@ -72,14 +72,14 @@ def main():
         if len(data) == 0:
             print("No update data")
             sys.exit(1)
-        res = requests.put(url + '/members/' + member_id, json=data)
-        member = json_response(res)
-        show_member(member)
+        res = requests.put(url + '/persons/' + person_id, json=data)
+        person = json_response(res)
+        show_person(person)
     elif args.action in ['remove', 'delete', 'rm']:
-        member_id = args.identifier
-        res = requests.delete(url + '/members/' + member_id)
+        person_id = args.identifier
+        res = requests.delete(url + '/persons/' + person_id)
         json_response(res)
-        print("Member deleted")
+        print("Person deleted")
     else:
         parser.print_help()
 
@@ -100,11 +100,11 @@ def json_response(response):
             return response.json()
 
 
-def show_member(member):
-    print("Member profile: ")
-    print(member['firstname'].capitalize(), member['lastname'].capitalize())
-    print("Id: ", member['id'])
-    print("Email:", member['email'])
+def show_person(person):
+    print("Person profile: ")
+    print(person['firstname'].capitalize(), person['lastname'].capitalize())
+    print("Id: ", person['id'])
+    print("Email:", person['email'])
 
 
 if __name__ == "__main__":

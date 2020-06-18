@@ -1,15 +1,15 @@
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
-from model.mapping.member import Member
+from model.mapping.person import Person
 from model.dao.dao import DAO
 
 from exceptions import Error, ResourceNotFound
 
 
-class MemberDAO(DAO):
+class PersonDAO(DAO):
     """
-    Member Mapping DAO
+    Person Mapping DAO
     """
 
     def __init__(self, database_session):
@@ -17,45 +17,45 @@ class MemberDAO(DAO):
 
     def get(self, id):
         try:
-            return self._database_session.query(Member).filter_by(id=id).order_by(Member.firstname).one()
+            return self._database_session.query(Person).filter_by(id=id).order_by(Person.firstname).one()
         except NoResultFound:
             raise ResourceNotFound()
 
     def get_all(self):
         try:
-            return self._database_session.query(Member).order_by(Member.firstname).all()
+            return self._database_session.query(Person).order_by(Person.firstname).all()
         except NoResultFound:
             raise ResourceNotFound()
 
     def get_by_name(self, firstname: str, lastname: str):
         try:
-            return self._database_session.query(Member).filter_by(firstname=firstname, lastname=lastname)\
-                .order_by(Member.firstname).one()
+            return self._database_session.query(Person).filter_by(firstname=firstname, lastname=lastname)\
+                .order_by(Person.firstname).one()
         except NoResultFound:
             raise ResourceNotFound()
 
     def create(self, data: dict):
         try:
-            member = Member(firstname=data.get('firstname'), lastname=data.get('lastname'), email=data.get('email'))
-            self._database_session.add(member)
+            person = Person(firstname=data.get('firstname'), lastname=data.get('lastname'), email=data.get('email'))
+            self._database_session.add(person)
             self._database_session.flush()
         except IntegrityError:
-            raise Error("Member already exists")
-        return member
+            raise Error("Person already exists")
+        return person
 
-    def update(self, member: Member, data: dict):
+    def update(self, person: Person, data: dict):
         if 'firstname' in data:
-            member.firstname = data['firstname']
+            person.firstname = data['firstname']
         if 'lastname' in data:
-            member.lastname = data['lastname']
+            person.lastname = data['lastname']
         if 'email' in data:
-            member.email = data['email']
+            person.email = data['email']
         try:
-            self._database_session.merge(member)
+            self._database_session.merge(person)
             self._database_session.flush()
         except IntegrityError:
             raise Error("Error data may be malformed")
-        return member
+        return person
 
     def delete(self, entity):
         try:
