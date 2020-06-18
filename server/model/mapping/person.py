@@ -4,6 +4,7 @@ import uuid
 from sqlalchemy import Column, String, UniqueConstraint, ForeignKey
 from sqlalchemy.orm import relationship
 from model.mapping.sport import SportAssociation
+from model.mapping.address import Address
 
 
 class Person(Base):
@@ -26,6 +27,7 @@ class Person(Base):
         return "<Person(%s %s)>" % (self.firstname, self.lastname.upper())
 
     def to_dict(self):
+        print('to dict')
         data = {
             "id": self.id,
             "firstname": self.firstname,
@@ -52,3 +54,6 @@ class Person(Base):
                 session.delete(association)
                 session.flush()
                 break
+
+    def set_address(self, street, postal_code, city, country):
+        self.address = Address(street=street, postal_code=postal_code, city=city, country=country)
