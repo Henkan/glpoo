@@ -1,7 +1,8 @@
 from model.mapping import Base
 import uuid
 
-from sqlalchemy import Column, String, UniqueConstraint
+from sqlalchemy import Column, String, UniqueConstraint, ForeignKey
+from sqlalchemy.orm import relationship
 
 
 class Sport(Base):
@@ -21,3 +22,21 @@ class Sport(Base):
             "name": self.name,
             "description": self.description
         }
+
+    def add_person(self, person, level, session):
+        association = SportAssociation(level=level)
+        association.sport_id = self.id
+        association.persons = person
+        # self.sports.append(association)
+        session.flush()
+
+
+class SportAssociation(Base):
+    __tablename__ = 'sportassociation'
+    __table_args__ = (UniqueConstraint('person_id', 'sport_id'),)
+
+    person_id = Column(String(36), ForeignKey('person.id'), primary_key=True)
+    sport_id = Column(String(36), ForeignKey('sport.id'), primary_key=True)
+    persons = relationship("Person", back_populates="sports")
+    sports = relationship("Sport", back_populates="persons")
+    level = Column(String(50), nullable=False)
