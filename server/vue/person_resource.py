@@ -28,7 +28,6 @@ def create_person():
 @person_resource.route('/persons', methods=['GET'])
 def get_persons():
     person_controller = _create_person_controller()
-
     try:
         # check if args in request, return all if no filter
         if "firstname" in request.args and "lastname" in request.args:

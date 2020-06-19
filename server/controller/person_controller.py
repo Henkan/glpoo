@@ -33,7 +33,6 @@ class PersonController:
         return person_data
 
     def create_person(self, data):
-
         self._check_profile_data(data)
         try:
             with self._database_engine.new_session() as session:

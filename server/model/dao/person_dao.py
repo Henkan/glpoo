@@ -37,6 +37,11 @@ class PersonDAO(DAO):
     def create(self, data: dict):
         try:
             person = Person(firstname=data.get('firstname'), lastname=data.get('lastname'), email=data.get('email'))
+
+            if 'address' in data.keys():
+                tmp = data.get('address')
+                person.set_address(street=tmp.get('street'), postal_code=tmp.get('postal_code'), country=tmp.get('country'), city=tmp.get('city'))
+
             self._database_session.add(person)
             self._database_session.flush()
         except IntegrityError:
@@ -50,6 +55,15 @@ class PersonDAO(DAO):
             person.lastname = data['lastname']
         if 'email' in data:
             person.email = data['email']
+        if 'address' in data:
+            if 'street' in data['address']:
+                person.address.street = data['address']['street']
+            if 'postal_code' in data['address']:
+                person.address.postal_code = data['address']['postal_code']
+            if 'city' in data['address']:
+                person.address.city = data['address']['city']
+            if 'country' in data['address']:
+                person.address.country = data['address']['country']
         try:
             self._database_session.merge(person)
             self._database_session.flush()

@@ -1,9 +1,10 @@
 from model.mapping import Base
 import uuid
 
-from sqlalchemy import Column, String, UniqueConstraint
+from sqlalchemy import Column, String, UniqueConstraint, ForeignKey
 from sqlalchemy.orm import relationship
 from model.mapping.sport import SportAssociation
+from model.mapping.address import Address
 
 
 class Person(Base):
@@ -23,6 +24,10 @@ class Person(Base):
         'polymorphic_on': person_type
     }
 
+    address_id = Column(String(36), ForeignKey('address.id'), nullable=True)
+
+    address = relationship('Address', cascade='all,delete')
+
     def __repr__(self):
         return "<Person(%s %s)>" % (self.firstname, self.lastname.upper())
 
@@ -36,6 +41,8 @@ class Person(Base):
         }
         for association in self.sports:
             data.get("sports").append({"name": association.sport.name, "level": association.level})
+        if self.address is not None:
+            data['address'] = self.address.to_dict()
         return data
 
     def add_sport(self, sport, level, session):
@@ -51,3 +58,6 @@ class Person(Base):
                 session.delete(association)
                 session.flush()
                 break
+
+    def set_address(self, street, postal_code, city, country):
+        self.address = Address(street=street, postal_code=postal_code, city=city, country=country)
