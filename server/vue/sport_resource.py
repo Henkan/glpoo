@@ -5,12 +5,15 @@ from controller.sport_controller import SportController
 from model.database import DatabaseEngine
 from exceptions import Error, ResourceNotFound
 
+from vue.authentication_resource import auth
+
 sport_resource = Blueprint("sport_resource", __name__)
 
 # List http status codes: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 
 
 @sport_resource.route('/sports', methods=['POST'])
+@auth.login_required(role='admin')
 def create_sport():
     data = request.get_json()
     if data is None or len(data) == 0:
@@ -52,6 +55,7 @@ def get_sport(sport_id=None):
 
 
 @sport_resource.route('/sports/<string:sport_id>', methods=['PUT'])
+@auth.login_required(role='admin')
 def update_sport(sport_id=None):
     sport_controller = _create_sport_controller()
     data = request.get_json()
@@ -65,6 +69,7 @@ def update_sport(sport_id=None):
 
 
 @sport_resource.route('/sports/<string:sport_id>', methods=['DELETE'])
+@auth.login_required(role='admin')
 def delete_sport(sport_id=None):
     sport_controller = _create_sport_controller()
     try:

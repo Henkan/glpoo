@@ -5,6 +5,8 @@ from controller.coach_controller import CoachController
 from model.database import DatabaseEngine
 from exceptions import Error, ResourceNotFound
 
+from vue.authentication_resource import auth
+
 coach_resource = Blueprint("coach_resource", __name__)
 
 
@@ -12,6 +14,7 @@ coach_resource = Blueprint("coach_resource", __name__)
 
 
 @coach_resource.route('/coach', methods=['POST'])
+@auth.login_required(role='admin')
 def create_coach():
     data = request.get_json()
     if data is None or len(data) == 0:
@@ -25,6 +28,7 @@ def create_coach():
 
 
 @coach_resource.route('/coachs', methods=['GET'])
+@auth.login_required()
 def get_coachs():
     coach_controller = _create_coach_controller()
 
@@ -42,6 +46,7 @@ def get_coachs():
 
 
 @coach_resource.route('/coach/<string:coach_id>', methods=['GET'])
+@auth.login_required()
 def get_coach(coach_id=None):
     coach_controller = _create_coach_controller()
     try:
@@ -54,6 +59,7 @@ def get_coach(coach_id=None):
 
 
 @coach_resource.route('/coach/<string:coach_id>', methods=['PUT'])
+@auth.login_required(role='admin')
 def update_coach(coach_id=None):
     coach_controller = _create_coach_controller()
     data = request.get_json()
@@ -67,6 +73,7 @@ def update_coach(coach_id=None):
 
 
 @coach_resource.route('/coach/<string:coach_id>', methods=['DELETE'])
+@auth.login_required(role='admin')
 def delete_person(coach_id=None):
     coach_controller = _create_coach_controller()
     try:

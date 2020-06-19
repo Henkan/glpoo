@@ -6,6 +6,8 @@ from controller.sport_controller import SportController
 from model.database import DatabaseEngine
 from exceptions import Error, ResourceNotFound
 
+from vue.authentication_resource import auth
+
 person_resource = Blueprint("person_resource", __name__)
 
 
@@ -26,6 +28,7 @@ def create_person():
 
 
 @person_resource.route('/persons', methods=['GET'])
+@auth.login_required()
 def get_persons():
     person_controller = _create_person_controller()
     try:
@@ -42,6 +45,7 @@ def get_persons():
 
 
 @person_resource.route('/persons/<string:person_id>', methods=['GET'])
+@auth.login_required()
 def get_person(person_id=None):
     person_controller = _create_person_controller()
     try:
@@ -54,6 +58,7 @@ def get_person(person_id=None):
 
 
 @person_resource.route('/persons/<string:person_id>', methods=['PUT'])
+@auth.login_required(role='admin')
 def update_person(person_id=None):
     person_controller = _create_person_controller()
     data = request.get_json()
@@ -67,6 +72,7 @@ def update_person(person_id=None):
 
 
 @person_resource.route('/persons/<string:person_id>', methods=['DELETE'])
+@auth.login_required(role='admin')
 def delete_person(person_id=None):
     person_controller = _create_person_controller()
     try:
@@ -79,6 +85,7 @@ def delete_person(person_id=None):
 
 
 @person_resource.route('/persons/<string:person_id>/sports/<string:sport_id>', methods=['POST'])
+@auth.login_required(role='admin')
 def create_person_sport(person_id=None, sport_id=None):
     person_controller = _create_person_controller()
     sport_controller = _create_sport_controller()
@@ -97,6 +104,7 @@ def create_person_sport(person_id=None, sport_id=None):
 
 
 @person_resource.route('/persons/<string:person_id>/sports/<string:sport_id>', methods=['DELETE'])
+@auth.login_required(role='admin')
 def delete_person_sport(person_id=None, sport_id=None):
     person_controller = _create_person_controller()
     sport_controller = _create_sport_controller()
