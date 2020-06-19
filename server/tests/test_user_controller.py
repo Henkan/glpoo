@@ -6,6 +6,8 @@ from controller.user_controller import UserController
 from model.database import DatabaseEngine
 from model.mapping.person import Person
 from model.mapping.user import User
+from model.mapping.sport_association import SportAssociation
+from model.mapping.sport import Sport
 
 
 class TestUserController(unittest.TestCase):

@@ -3,7 +3,7 @@ import uuid
 
 from sqlalchemy import Column, String, UniqueConstraint, ForeignKey
 from sqlalchemy.orm import relationship
-from model.mapping.sport import SportAssociation
+from model.mapping.sport_association import SportAssociation
 from model.mapping.address import Address
 from model.mapping.user import User
 
