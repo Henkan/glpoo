@@ -25,8 +25,10 @@ class Person(Base):
     }
 
     address_id = Column(String(36), ForeignKey('address.id'), nullable=True)
-
     address = relationship('Address', cascade='all,delete')
+
+    user_id = Column(String(36), ForeignKey('user.id'), nullable=True)
+    user = relationship('User', cascade='all,delete')
 
     def __repr__(self):
         return "<Person(%s %s)>" % (self.firstname, self.lastname.upper())
