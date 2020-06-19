@@ -35,7 +35,7 @@ class CoachController:
         self._check_profile_data(data)
         try:
             with self._database_engine.new_session() as session:
-                # Save sport in database
+                # Save coach in database
                 coach = CoachDAO(session).create(data)
                 coach_data = coach.to_dict()
                 return coach_data
