@@ -10,8 +10,8 @@ from vue.authentication_resource import auth
 user_resource = Blueprint("user_resource", __name__)
 
 
-# TODO: only allow for one user
 @user_resource.route('/users', methods=['POST'])
+@auth.login_required(role='admin')
 def create_user():
     data = request.get_json()
     if data is None or len(data) == 0:
@@ -58,6 +58,7 @@ def get_users():
 
 
 @user_resource.route('/users/<string:user_id>', methods=['GET'])
+@auth.login_required()
 def get_user(user_id=None):
     user_controller = _create_user_controller()
     try:

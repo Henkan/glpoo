@@ -2,6 +2,7 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from model.mapping.person import Person
+from model.mapping.user import User
 from model.dao.dao import DAO
 
 from exceptions import Error, ResourceNotFound
@@ -29,8 +30,14 @@ class PersonDAO(DAO):
 
     def get_by_name(self, firstname: str, lastname: str):
         try:
-            return self._database_session.query(Person).filter_by(firstname=firstname, lastname=lastname)\
+            return self._database_session.query(Person).filter_by(firstname=firstname, lastname=lastname) \
                 .order_by(Person.firstname).one()
+        except NoResultFound:
+            raise ResourceNotFound()
+
+    def get_by_id_user(self, id_user: str):
+        try:
+            return self._database_session.query(Person).filter_by(user_id=id_user).order_by(Person.firstname).one()
         except NoResultFound:
             raise ResourceNotFound()
 
@@ -40,7 +47,8 @@ class PersonDAO(DAO):
 
             if 'address' in data.keys():
                 tmp = data.get('address')
-                person.set_address(street=tmp.get('street'), postal_code=tmp.get('postal_code'), country=tmp.get('country'), city=tmp.get('city'))
+                person.set_address(street=tmp.get('street'), postal_code=tmp.get('postal_code'),
+                                   country=tmp.get('country'), city=tmp.get('city'))
 
             if 'user' in data.keys():
                 usr = data.get('user')

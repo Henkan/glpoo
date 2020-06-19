@@ -5,7 +5,7 @@ from controller.coach_controller import CoachController
 from model.database import DatabaseEngine
 from exceptions import Error, ResourceNotFound
 
-from vue.authentication_resource import auth
+from vue.authentication_resource import auth, check_user_has_rights
 
 coach_resource = Blueprint("coach_resource", __name__)
 
@@ -59,10 +59,14 @@ def get_coach(coach_id=None):
 
 
 @coach_resource.route('/coach/<string:coach_id>', methods=['PUT'])
-@auth.login_required(role='admin')
+@auth.login_required()
 def update_coach(coach_id=None):
     coach_controller = _create_coach_controller()
     data = request.get_json()
+
+    if not check_user_has_rights(auth.current_user(), coach_id):
+        return _json_response('Unauthorized access', code=401)
+
     try:
         coach = coach_controller.update_coach(coach_id, data)
         return _json_response(coach, code=200)

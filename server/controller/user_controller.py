@@ -74,7 +74,11 @@ class UserController:
         with self._database_engine.new_session() as session:
             user_dao = UserDAO(session)
             user = user_dao.get_by_name(username)
-            return user.check_password(password)
+            res = user.check_password(password)
+            if not res:
+                return None
+            else:
+                return user.to_dict()
 
     def validate_admin_role(self, username: str):
         with self._database_engine.new_session() as session:

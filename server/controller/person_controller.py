@@ -2,6 +2,7 @@ import re
 
 from model.dao.person_dao import PersonDAO
 from model.dao.sport_dao import SportDAO
+from model.dao.user_dao import UserDAO
 from exceptions import Error, InvalidData
 
 
@@ -29,6 +30,13 @@ class PersonController:
     def get_person_by_name(self, firstname, lastname):
         with self._database_engine.new_session() as session:
             person = PersonDAO(session).get_by_name(firstname, lastname)
+            person_data = person.to_dict()
+        return person_data
+
+    def get_person_by_username(self, username):
+        with self._database_engine.new_session() as session:
+            user = UserDAO(session).get_by_name(username)
+            person = PersonDAO(session).get_by_id_user(user.id)
             person_data = person.to_dict()
         return person_data
 

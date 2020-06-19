@@ -6,7 +6,7 @@ from controller.sport_controller import SportController
 from model.database import DatabaseEngine
 from exceptions import Error, ResourceNotFound
 
-from vue.authentication_resource import auth
+from vue.authentication_resource import auth, check_user_has_rights
 
 person_resource = Blueprint("person_resource", __name__)
 
@@ -59,10 +59,14 @@ def get_person(person_id=None):
 
 
 @person_resource.route('/persons/<string:person_id>', methods=['PUT'])
-@auth.login_required(role='admin')
+@auth.login_required()
 def update_person(person_id=None):
     person_controller = _create_person_controller()
     data = request.get_json()
+
+    if not check_user_has_rights(auth.current_user(), person_id):
+        return _json_response('Unauthorized access', code=401)
+
     try:
         person = person_controller.update_person(person_id, data)
         return _json_response(person, code=200)
@@ -110,7 +114,7 @@ def delete_person_sport(person_id=None, sport_id=None):
     person_controller = _create_person_controller()
     sport_controller = _create_sport_controller()
     try:
-        person = person_controller.get_person(person_id)
+        person = person_controller.get_person(person_id)  # Raise exception if it doesn't exist
         sport = sport_controller.get_sport(sport_id)
         person = person_controller.delete_person_sport(person_id, sport_id)
         return _json_response({}, code=204)
