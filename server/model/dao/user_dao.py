@@ -46,7 +46,7 @@ class UserDAO(DAO):
 
     def update(self, user: User, data: dict):
         if 'username' in data:
-            user.name = data['username']
+            user.username = data['username']
         if 'password' in data:
             user.hash_password(data['password'])
         try:
