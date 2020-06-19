@@ -42,6 +42,10 @@ class PersonDAO(DAO):
                 tmp = data.get('address')
                 person.set_address(street=tmp.get('street'), postal_code=tmp.get('postal_code'), country=tmp.get('country'), city=tmp.get('city'))
 
+            if 'user' in data.keys():
+                usr = data.get('user')
+                person.set_user(username=usr.get('username'), password=usr.get('password'), admin=usr.get('admin'))
+
             self._database_session.add(person)
             self._database_session.flush()
         except IntegrityError:
@@ -64,6 +68,12 @@ class PersonDAO(DAO):
                 person.address.city = data['address']['city']
             if 'country' in data['address']:
                 person.address.country = data['address']['country']
+        if 'user' in data:
+            if 'username' in data['user']:
+                person.user.username = data['user']['username']
+            if 'password' in data['user']:
+                person.user.hash_password(data['user']['password'])
+
         try:
             self._database_session.merge(person)
             self._database_session.flush()

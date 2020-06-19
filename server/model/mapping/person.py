@@ -5,6 +5,7 @@ from sqlalchemy import Column, String, UniqueConstraint, ForeignKey
 from sqlalchemy.orm import relationship
 from model.mapping.sport import SportAssociation
 from model.mapping.address import Address
+from model.mapping.user import User
 
 
 class Person(Base):
@@ -45,6 +46,8 @@ class Person(Base):
             data.get("sports").append({"name": association.sport.name, "level": association.level})
         if self.address is not None:
             data['address'] = self.address.to_dict()
+        if self.user is not None:
+            data['user'] = self.user.to_dict()
         return data
 
     def add_sport(self, sport, level, session):
@@ -63,3 +66,7 @@ class Person(Base):
 
     def set_address(self, street, postal_code, city, country):
         self.address = Address(street=street, postal_code=postal_code, city=city, country=country)
+
+    def set_user(self, username, password, admin=False):
+        self.user = User(username=username, admin=admin)
+        self.user.hash_password(password)

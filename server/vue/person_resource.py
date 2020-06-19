@@ -24,6 +24,7 @@ def create_person():
         person = person_controller.create_person(data)
         return _json_response(person, code=201)
     except Error as e:
+        print(data)
         return _error_response(str(e), code=400)
 
 
