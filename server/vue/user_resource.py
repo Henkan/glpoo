@@ -1,24 +1,16 @@
 import json
 from flask import Blueprint, request, Response
-from flask_httpauth import HTTPBasicAuth
 
 from controller.user_controller import UserController
 from model.database import DatabaseEngine
 from exceptions import Error, ResourceNotFound
 
+from vue.authentication_resource import auth
+
 user_resource = Blueprint("user_resource", __name__)
-auth = HTTPBasicAuth()
 
 
-@auth.verify_password
-def verify_password(username, password):
-    user_controller = _create_user_controller()
-    try:
-        return user_controller.validate_credentials(username, password)
-    except Error as e:
-        return False
-
-
+# TODO: only allow for one user
 @user_resource.route('/users', methods=['POST'])
 def create_user():
     data = request.get_json()
@@ -32,8 +24,25 @@ def create_user():
         return _error_response(str(e), code=400)
 
 
+@user_resource.route('/users/<string:user_id>', methods=['POST'])
+@auth.login_required(role='admin')
+def set_user_role(user_id=None):
+    # Set a user as admin
+    user_controller = _create_user_controller()
+    data = request.get_json()
+    if data is None or len(data) == 0:
+        return _error_response("Missing data", code=400)
+    try:
+        user = user_controller.set_user_role(user_id, data.get("admin"))
+        return _json_response(user, code=200)
+    except ResourceNotFound:
+        return _error_response("User %s not found" % user_id, code=404)
+    except Error as e:
+        return _error_response(str(e), code=400)
+
+
 @user_resource.route('/users', methods=['GET'])
-@auth.login_required
+@auth.login_required()
 def get_users():
     user_controller = _create_user_controller()
     try:

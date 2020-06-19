@@ -56,6 +56,15 @@ class UserDAO(DAO):
             raise Error("Error data may be malformed")
         return user
 
+    def set_role(self, user: User, role_admin: bool):
+        user.admin = role_admin
+        try:
+            self._database_session.merge(user)
+            self._database_session.flush()
+        except IntegrityError:
+            raise Error("Error data may be malformed")
+        return user
+
     def delete(self, entity):
         try:
             self._database_session.delete(entity)

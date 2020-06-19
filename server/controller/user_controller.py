@@ -50,6 +50,13 @@ class UserController:
             user = user_dao.update(user, user_data)
             return user.to_dict()
 
+    def set_user_role(self, user_id: str, admin: bool):
+        with self._database_engine.new_session() as session:
+            user_dao = UserDAO(session)
+            user = user_dao.get(user_id)
+            user = user_dao.set_role(user, admin)
+            return user.to_dict()
+
     def delete_user(self, user_id: str):
         with self._database_engine.new_session() as session:
             user_dao = UserDAO(session)
@@ -68,6 +75,12 @@ class UserController:
             user_dao = UserDAO(session)
             user = user_dao.get_by_name(username)
             return user.check_password(password)
+
+    def validate_admin_role(self, username: str):
+        with self._database_engine.new_session() as session:
+            user_dao = UserDAO(session)
+            user = user_dao.get_by_name(username)
+            return user.admin
 
     def _check_profile_data(self, data, update=False):
         mandatories = {
