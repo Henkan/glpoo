@@ -1,68 +1,68 @@
 import re
 
-from model.dao.coach_dao import CoachDAO
+from model.dao.member_dao import MemberDAO
 from exceptions import Error, InvalidData
 
 
-class CoachController:
+class MemberController:
     """
-    Coach actions
+    Member actions
     """
 
     def __init__(self, database_engine):
         self._database_engine = database_engine
         self._frames = []
 
-    def list_coachs(self):
+    def list_members(self):
         with self._database_engine.new_session() as session:
-            coachs = CoachDAO(session).get_all()
-            coachs_data = [coach.to_dict() for coach in coachs]
-        return coachs_data
+            members = MemberDAO(session).get_all()
+            members_data = [member.to_dict() for member in members]
+        return members_data
 
-    def get_coach(self, coach_id: str):
+    def get_member(self, member_id: str):
         with self._database_engine.new_session() as session:
-            coach = CoachDAO(session).get(coach_id)
-            coach_data = coach.to_dict()
-        return coach_data
+            member = MemberDAO(session).get(member_id)
+            member_data = member.to_dict()
+        return member_data
 
-    def get_coach_by_name(self, firstname: str, lastname: str):
+    def get_member_by_name(self, firstname: str, lastname: str):
         with self._database_engine.new_session() as session:
-            coach = CoachDAO(session).get_by_name(firstname, lastname)
-            coach_data = coach.to_dict()
-        return coach_data
+            member = MemberDAO(session).get_by_name(firstname, lastname)
+            member_data = member.to_dict()
+        return member_data
 
-    def create_coach(self, data: dict):
+    def create_member(self, data: dict):
         self._check_profile_data(data)
         try:
             with self._database_engine.new_session() as session:
-                # Save coach in database
-                coach = CoachDAO(session).create(data)
-                coach_data = coach.to_dict()
-                return coach_data
+                # Save sport in database
+                member = MemberDAO(session).create(data)
+                member_data = member.to_dict()
+                return member_data
         except Error as e:
             # log error
             raise e
 
-    def update_coach(self, coach_id: str, coach_data: dict):
-        self._check_profile_data(coach_data, update=True)
+    def update_member(self, member_id: str, member_data: dict):
+        self._check_profile_data(member_data, update=True)
         with self._database_engine.new_session() as session:
-            coach_dao = CoachDAO(session)
-            coach = coach_dao.get(coach_id)
-            coach = coach_dao.update(coach, coach_data)
-            return coach.to_dict()
+            member_dao = MemberDAO(session)
+            member = member_dao.get(member_id)
+            member = member_dao.update(member, member_data)
+            return member.to_dict()
 
-    def delete_coach(self, coach_id: str):
+    def delete_member(self, member_id: str):
         with self._database_engine.new_session() as session:
-            coach_dao = CoachDAO(session)
-            coach = coach_dao.get(coach_id)
-            coach_dao.delete(coach)
+            member_dao = MemberDAO(session)
+            member = member_dao.get(member_id)
+            member_dao.delete(member)
 
-    def search_coach(self, firstname: str, lastname: str):
+    def search_member(self, firstname: str, lastname: str):
         # Query database
         with self._database_engine.new_session() as session:
-            coach_dao = CoachDAO(session)
-            coach = coach_dao.get_by_name(firstname, lastname)
-            return coach.to_dict()
+            member_dao = MemberDAO(session)
+            member = member_dao.get_by_name(firstname, lastname)
+            return member.to_dict()
 
     def _check_profile_data(self, data: dict, update=False):
         name_pattern = re.compile("^[\S-]{2,50}$")
@@ -70,8 +70,7 @@ class CoachController:
         mandatories = {
             'firstname': {"type": str, "regex": name_pattern},
             'lastname': {"type": str, "regex": name_pattern},
-            'email': {"type": str, "regex": email_pattern},
-            'degree': {"type": str, "regex": name_pattern}
+            'email': {"type": str, "regex": email_pattern}
         }
         for mandatory, specs in mandatories.items():
             if not update:

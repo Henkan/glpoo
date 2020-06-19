@@ -5,7 +5,7 @@ from sqlalchemy import Column, String, ForeignKey
 class Coach(Person):
     __tablename__ = 'coach'
 
-    id_person = Column(String(36), ForeignKey('person.id'), primary_key=True)
+    id = Column(String(36), ForeignKey('person.id'), primary_key=True)
 
     contract = Column(String(50), nullable=False)
     degree = Column(String(50), nullable=False)

@@ -35,7 +35,7 @@ def get_coachs():
     try:
         # check if args in request, return all if no filter
         if "firstname" in request.args and "lastname" in request.args:
-            coach = coach_controller.get_person_by_name(request.args.get('firstname'),
+            coach = coach_controller.get_coach_by_name(request.args.get('firstname'),
                                                         request.args.get('lastname'))
             return _json_response(coach, code=200)
         else:
