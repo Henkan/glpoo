@@ -21,13 +21,12 @@ class Person(Base):
 
     address_id = Column(String(36), ForeignKey('address.id'), nullable=True)
 
-    address = relationship('Address')
+    address = relationship('Address', cascade='all,delete')
 
     def __repr__(self):
         return "<Person(%s %s)>" % (self.firstname, self.lastname.upper())
 
     def to_dict(self):
-        print('to dict')
         data = {
             "id": self.id,
             "firstname": self.firstname,
