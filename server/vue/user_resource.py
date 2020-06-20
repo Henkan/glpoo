@@ -42,7 +42,7 @@ def set_user_role(user_id=None):
 
 
 @user_resource.route('/users', methods=['GET'])
-@auth.login_required()
+@auth.login_required(role='admin')
 def get_users():
     user_controller = _create_user_controller()
     try:
@@ -58,7 +58,7 @@ def get_users():
 
 
 @user_resource.route('/users/<string:user_id>', methods=['GET'])
-@auth.login_required()
+@auth.login_required(role='admin')
 def get_user(user_id=None):
     user_controller = _create_user_controller()
     try:
@@ -71,6 +71,7 @@ def get_user(user_id=None):
 
 
 @user_resource.route('/users/<string:user_id>', methods=['PUT'])
+@auth.login_required(role='admin')
 def update_user(user_id=None):
     user_controller = _create_user_controller()
     data = request.get_json()
@@ -84,6 +85,7 @@ def update_user(user_id=None):
 
 
 @user_resource.route('/users/<string:user_id>', methods=['DELETE'])
+@auth.login_required(role='admin')
 def delete_user(user_id=None):
     user_controller = _create_user_controller()
     try:

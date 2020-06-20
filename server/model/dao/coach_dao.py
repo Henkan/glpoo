@@ -38,6 +38,16 @@ class CoachDAO(DAO):
         try:
             coach = Coach(firstname=data.get('firstname'), lastname=data.get('lastname'), email=data.get('email'),
                           contract=data.get('contract'), degree=data.get('degree'))
+
+            if 'address' in data.keys():
+                tmp = data.get('address')
+                coach.set_address(street=tmp.get('street'), postal_code=tmp.get('postal_code'),
+                                   country=tmp.get('country'), city=tmp.get('city'))
+
+            if 'user' in data.keys():
+                usr = data.get('user')
+                coach.set_user(username=usr.get('username'), password=usr.get('password'), admin=usr.get('admin'))
+
             self._database_session.add(coach)
             self._database_session.flush()
         except IntegrityError:
@@ -55,6 +65,20 @@ class CoachDAO(DAO):
             coach.contract = data['contract']
         if 'degree' in data:
             coach.degree = data['degree']
+        if 'address' in data:
+            if 'street' in data['address']:
+                coach.address.street = data['address']['street']
+            if 'postal_code' in data['address']:
+                coach.address.postal_code = data['address']['postal_code']
+            if 'city' in data['address']:
+                coach.address.city = data['address']['city']
+            if 'country' in data['address']:
+                coach.address.country = data['address']['country']
+        if 'user' in data:
+            if 'username' in data['user']:
+                coach.user.username = data['user']['username']
+            if 'password' in data['user']:
+                coach.user.hash_password(data['user']['password'])
         try:
             self._database_session.merge(coach)
             self._database_session.flush()

@@ -17,6 +17,7 @@ def main():
     '''
     Options for Person
     '''
+    # TODO: remove person, only member or coach
     subparsers.add_parser('list_persons', aliases=['ls_persons'], description='List association persons',
                           help="Show association persons")
 
@@ -84,6 +85,51 @@ def main():
                                                 description='Remove association sport',
                                                 help="Remove sport")
     remove_sport_parser.add_argument("identifier", help="id")
+
+    '''
+    Options for Coach
+    '''
+    subparsers.add_parser('list_coachs', aliases=['ls_coachs'], description='List association coachs',
+                          help="Show association coachs")
+
+    get_coach_parser = subparsers.add_parser('get_coach', aliases=['show_coach'], description='Get association coach',
+                                             help="Get coach")
+    get_coach_parser.add_argument("firstname", help="Firstname")
+    get_coach_parser.add_argument("lastname", help="Lastname")
+
+    new_coach_parser = subparsers.add_parser('new_coach', aliases=['add_coach', 'create_coach'],
+                                             description='Create new association coach',
+                                             help="Create coach")
+    new_coach_parser.add_argument("firstname", help="Firstname")
+    new_coach_parser.add_argument("lastname", help="Lastname")
+    new_coach_parser.add_argument("email", help="Email address")
+    new_coach_parser.add_argument("degree", help="Degree")
+    new_coach_parser.add_argument("--street", help='Street', default=None)
+    new_coach_parser.add_argument("--city", help='City', default=None)
+    new_coach_parser.add_argument("--postal_code", help='Postal code', default=None)
+    new_coach_parser.add_argument("--country", help='Country', default=None)
+    new_coach_parser.add_argument("--username", help='Username', default=None)
+    new_coach_parser.add_argument("--password", help='Password', default=None)
+
+    update_coach_parser = subparsers.add_parser('update_coach', aliases=['modify_coach'],
+                                                description='Update association coach',
+                                                help="Update coach")
+    update_coach_parser.add_argument("identifier", help="id")
+    update_coach_parser.add_argument("--firstname", help="Update firstname", default=None)
+    update_coach_parser.add_argument("--lastname", help="Update lastname", default=None)
+    update_coach_parser.add_argument("--email", help="Update email address", default=None)
+    update_coach_parser.add_argument("--degree", help="Update degree", default=None)
+    update_coach_parser.add_argument("--street", help='Street', default=None)
+    update_coach_parser.add_argument("--city", help='City', default=None)
+    update_coach_parser.add_argument("--postal_code", help='Postal code', default=None)
+    update_coach_parser.add_argument("--country", help='Country', default=None)
+    update_coach_parser.add_argument("--username", help='Username', default=None)
+    update_coach_parser.add_argument("--password", help='Password', default=None)
+
+    remove_coach_parser = subparsers.add_parser('remove_coach', aliases=['delete_coach', 'rm_coach'],
+                                                description='Remove association coach',
+                                                help="Remove coach")
+    remove_coach_parser.add_argument("identifier", help="id")
 
     args = parser.parse_args()
     url = args.url
@@ -174,6 +220,57 @@ def main():
         res = requests.delete(url + '/sports/' + sport_id, auth=auth)
         json_response(res)
         print("Sport deleted")
+    elif args.action in ['list_coachs', 'ls_coachs']:
+        res = requests.get(url + '/coachs', auth=auth)
+        persons = json_response(res)
+        print("Coachs: ")
+        for person in persons:
+            print("* %s %s (%s)" % (person['firstname'].capitalize(),
+                                    person['lastname'].capitalize(),
+                                    person['email']))
+    elif args.action in ['get_coach', 'show_coach']:
+        firstname = args.firstname
+        lastname = args.lastname
+        res = requests.get(url + '/coachs', params={"firstname": firstname, "lastname": lastname}, auth=auth)
+        person = json_response(res)
+        show_person(person)
+    elif args.action in ['new_coach', 'add_coach', 'create_coach']:
+        data = {
+            "firstname": args.firstname,
+            "lastname": args.lastname,
+            "email": args.email,
+            "degree": args.degree
+        }
+
+        for key in ["street", "city", "postal_code", "country", "username", "password"]:
+            value = getattr(args, key)
+            if value is not None:
+                data[key] = getattr(args, key)
+
+        res = requests.post(url + '/coachs', json=data, auth=auth)
+        coach = json_response(res)
+        show_coach(coach)
+    elif args.action in ['update_coach', 'modify_coach']:
+
+        person_id = args.identifier
+
+        data = {}
+        for key in ["firstname", "lastname", "email", "street", "city", "postal_code", "country", "username",
+                    "password", "degree"]:
+            value = getattr(args, key)
+            if value is not None:
+                data[key] = getattr(args, key)
+        if len(data) == 0:
+            print("No update data")
+            sys.exit(1)
+        res = requests.put(url + '/coachs/' + person_id, json=data, auth=auth)
+        person = json_response(res)
+        show_coach(person)
+    elif args.action in ['remove_coach', 'delete_coach', 'rm_coach']:
+        person_id = args.identifier
+        res = requests.delete(url + '/coachs/' + person_id, auth=auth)
+        json_response(res)
+        print("Coach deleted")
     else:
         parser.print_help()
 
@@ -207,6 +304,14 @@ def show_person(person):
 def show_sport(sport):
     print("Sport information: ")
     print(sport["name"], " - ", sport["description"])
+
+
+def show_coach(coach):
+    print("Coach profile: ")
+    print(coach['firstname'].capitalize(), coach['lastname'].capitalize())
+    print("Id: ", coach['id'])
+    print("Email:", coach['email'])
+    print('Degree:', coach['degree'])
 
 
 if __name__ == "__main__":
