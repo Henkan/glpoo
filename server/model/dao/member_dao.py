@@ -3,6 +3,8 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from model.mapping.member import Member
 from model.dao.dao import DAO
+from model.mapping.lesson import Lesson
+from model.mapping.linkLessonMember import LinkLessonMember
 
 from exceptions import Error, ResourceNotFound
 
@@ -65,3 +67,14 @@ class MemberDAO(DAO):
             self._database_session.delete(entity)
         except SQLAlchemyError as e:
             raise Error(str(e))
+
+    def add_lesson(self, member: Member, lesson: Lesson):
+        link = LinkLessonMember()
+        link.lesson = lesson
+        member.lessons.append(link)
+        try:
+            self._database_session.merge(member)
+            self._database_session.flush()
+        except IntegrityError:
+            raise Error("Cannot add the lesson to the member.")
+        return member
