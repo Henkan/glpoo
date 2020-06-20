@@ -21,6 +21,7 @@ class MemberDAO(DAO):
         try:
             return self._database_session.query(Member).filter_by(id=id).order_by(Member.firstname).one()
         except NoResultFound:
+            print('here')
             raise ResourceNotFound()
 
     def get_all(self):
@@ -68,13 +69,16 @@ class MemberDAO(DAO):
         except SQLAlchemyError as e:
             raise Error(str(e))
 
-    def add_lesson(self, member: Member, lesson: Lesson):
+    def add_lesson(self, member: Member, lesson: Lesson, session):
         link = LinkLessonMember()
         link.lesson = lesson
-        member.lessons.append(link)
-        try:
-            self._database_session.merge(member)
-            self._database_session.flush()
-        except IntegrityError:
-            raise Error("Cannot add the lesson to the member.")
-        return member
+        link.member_id = member.id
+        session.flush()
+
+    def delete_lesson(self, member: Member, lesson: Lesson, session):
+        for link in member.lessons:
+            if link.lesson == lesson:
+                member.lessons.remove(link)
+                session.delete(link)
+                session.flush()
+                break

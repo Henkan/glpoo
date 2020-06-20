@@ -15,7 +15,7 @@ class Lesson(Base):
     start_time = Column(Integer, nullable=False)
     end_time = Column(Integer, nullable=False)
     level = Column(String(50), nullable=False)
-    members = relationship('LinkLessonMember', back_populates = 'Lesson')
+    members = relationship('LinkLessonMember', back_populates = 'lesson')
 
     def __repr__(self):
         return "<Lesson on %s : %s - %s . Level : %s>" % (self.date, self.start_time, self.end_time, self.level)

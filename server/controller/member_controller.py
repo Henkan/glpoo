@@ -2,7 +2,7 @@ import re
 
 from model.dao.member_dao import MemberDAO
 from exceptions import Error, InvalidData
-from controller.lesson_controller import LessonController
+from model.dao.lesson_dao import LessonDAO
 
 
 class MemberController:
@@ -56,11 +56,17 @@ class MemberController:
         with self._database_engine.new_session() as session:
             member_dao = MemberDAO(session)
             member = member_dao.get(member_id)
+            lesson_dao = LessonDAO(session)
+            lesson = lesson_dao.get(lesson_id)
+            member_dao.add_lesson(member, lesson, session)
 
-            lesson = LessonController.get_lesson(lesson_id)
-
-            member = member_dao.add_lesson(member, lesson)
-            return member.to_dict()
+    def delete_lesson(self, member_id: str, lesson_id: str):
+        with self._database_engine.new_session() as session:
+            member_dao = MemberDAO(session)
+            member = member_dao.get(member_id)
+            lesson_dao = LessonDAO(session)
+            lesson = lesson_dao.get(lesson_id)
+            member_dao.delete_lesson(member, lesson, session)
 
     def delete_member(self, member_id: str):
         with self._database_engine.new_session() as session:
