@@ -5,4 +5,5 @@ python:
 install:
   - pip install -r server/requirements.txt
 script:
+  - cd server
   - python -m unittest
