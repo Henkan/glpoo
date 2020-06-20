@@ -78,6 +78,30 @@ def delete_member(member_id=None):
         return _error_response(str(e), code=400)
 
 
+@member_resource.route('/member/<string:member_id>/lesson/<string:lesson_id>', methods=['PUT'])
+def create_member_lesson(member_id=None, lesson_id=None):
+    member_controller = _create_member_controller()
+    try:
+        member_controller.add_lesson(member_id, lesson_id)
+        return _json_response('lesson added', code=200)
+    except ResourceNotFound:
+        return _error_response("Member or lesson not found", code=404)
+    except Error as e:
+        return _error_response(str(e), code=400)
+
+
+@member_resource.route('/member/<string:member_id>/lesson/<string:lesson_id>', methods=['DELETE'])
+def delete_member_lesson(member_id=None, lesson_id=None):
+    member_controller = _create_member_controller()
+    try:
+        member_controller.delete_lesson(member_id, lesson_id)
+        return _json_response('lesson deleted', code=200)
+    except ResourceNotFound:
+        return _error_response("Member or lesson not found", code=404)
+    except Error as e:
+        return _json_response(str(e), code=400)
+
+
 def _json_response(data, code=200):
     return Response(json.dumps(data), content_type="application/json", status=code)
 

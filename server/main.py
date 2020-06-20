@@ -6,7 +6,7 @@ from vue.sport_resource import sport_resource
 from vue.coach_resource import coach_resource
 from vue.user_resource import user_resource
 from vue.member_resource import member_resource
-
+from vue.lesson_resource import lesson_resource
 
 def main():
     print("Welcome of BDS Association")
@@ -23,6 +23,7 @@ def main():
     app.register_blueprint(coach_resource)
     app.register_blueprint(user_resource)
     app.register_blueprint(member_resource)
+    app.register_blueprint(lesson_resource)
 
     app.run(host="0.0.0.0", port=5000)
 

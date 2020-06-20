@@ -3,6 +3,8 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from model.mapping.member import Member
 from model.dao.dao import DAO
+from model.mapping.lesson import Lesson
+from model.mapping.linkLessonMember import LinkLessonMember
 
 from exceptions import Error, ResourceNotFound
 
@@ -19,6 +21,7 @@ class MemberDAO(DAO):
         try:
             return self._database_session.query(Member).filter_by(id=id).order_by(Member.firstname).one()
         except NoResultFound:
+            print('here')
             raise ResourceNotFound()
 
     def get_all(self):
@@ -65,3 +68,17 @@ class MemberDAO(DAO):
             self._database_session.delete(entity)
         except SQLAlchemyError as e:
             raise Error(str(e))
+
+    def add_lesson(self, member: Member, lesson: Lesson, session):
+        link = LinkLessonMember()
+        link.lesson = lesson
+        link.member_id = member.id
+        session.flush()
+
+    def delete_lesson(self, member: Member, lesson: Lesson, session):
+        for link in member.lessons:
+            if link == lesson:
+                member.lessons.remove(link)
+                session.delete(link)
+                session.flush()
+                break
