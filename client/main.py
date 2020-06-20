@@ -17,7 +17,6 @@ def main():
     '''
     Options for Person
     '''
-    # TODO: remove person, only member or coach
     subparsers.add_parser('list_persons', aliases=['ls_persons'], description='List association persons',
                           help="Show association persons")
 
@@ -130,6 +129,51 @@ def main():
                                                 description='Remove association coach',
                                                 help="Remove coach")
     remove_coach_parser.add_argument("identifier", help="id")
+
+    '''
+    Options for Member
+    '''
+    subparsers.add_parser('list_members', aliases=['ls_members'], description='List association members',
+                          help="Show association members")
+
+    get_member_parser = subparsers.add_parser('get_member', aliases=['show_member'], description='Get association member',
+                                       help="Get member")
+    get_member_parser.add_argument("firstname", help="Firstname")
+    get_member_parser.add_argument("lastname", help="Lastname")
+
+    new_member_parser = subparsers.add_parser('new_member', aliases=['add_member', 'create_member'],
+                                       description='Create new association member',
+                                       help="Create member")
+    new_member_parser.add_argument("firstname", help="Firstname")
+    new_member_parser.add_argument("lastname", help="Lastname")
+    new_member_parser.add_argument("email", help="Email address")
+    new_member_parser.add_argument("medical_certificate", help="Medical certificate")
+    new_member_parser.add_argument("--street", help='Street', default=None)
+    new_member_parser.add_argument("--city", help='City', default=None)
+    new_member_parser.add_argument("--postal_code", help='Postal code', default=None)
+    new_member_parser.add_argument("--country", help='Country', default=None)
+    new_member_parser.add_argument("--username", help='Username', default=None)
+    new_member_parser.add_argument("--password", help='Password', default=None)
+
+    update_member_parser = subparsers.add_parser('update_member', aliases=['modify_member'],
+                                          description='Update association member',
+                                          help="Update member")
+    update_member_parser.add_argument("identifier", help="id")
+    update_member_parser.add_argument("--firstname", help="Update firstname", default=None)
+    update_member_parser.add_argument("--lastname", help="Update lastname", default=None)
+    update_member_parser.add_argument("--email", help="Update email address", default=None)
+    update_member_parser.add_argument("--medical_certificate", help="Medical certificate", default=None)
+    update_member_parser.add_argument("--street", help='Street', default=None)
+    update_member_parser.add_argument("--city", help='City', default=None)
+    update_member_parser.add_argument("--postal_code", help='Postal code', default=None)
+    update_member_parser.add_argument("--country", help='Country', default=None)
+    update_member_parser.add_argument("--username", help='Username', default=None)
+    update_member_parser.add_argument("--password", help='Password', default=None)
+
+    remove_member_parser = subparsers.add_parser('remove_member', aliases=['delete_member', 'rm_member'],
+                                          description='Remove association member',
+                                          help="Remove member")
+    remove_member_parser.add_argument("identifier", help="id")
 
     args = parser.parse_args()
     url = args.url
@@ -271,8 +315,64 @@ def main():
         res = requests.delete(url + '/coachs/' + person_id, auth=auth)
         json_response(res)
         print("Coach deleted")
+    elif args.action in ['list_members', 'ls_members']:
+        res = requests.get(url + '/members', auth=auth)
+        persons = json_response(res)
+        print("Members: ")
+        for person in persons:
+            print("* %s %s (%s) - Certificate %s" % (person['firstname'].capitalize(),
+                                    person['lastname'].capitalize(),
+                                    person['email'],
+                                    person['medical_certificate']))
+    elif args.action in ['get_member', 'show_member']:
+        firstname = args.firstname
+        lastname = args.lastname
+        res = requests.get(url + '/members', params={"firstname": firstname, "lastname": lastname}, auth=auth)
+        person = json_response(res)
+        show_person(person)
+    elif args.action in ['new_member', 'add_member', 'create_member']:
+        data = {
+            "firstname": args.firstname,
+            "lastname": args.lastname,
+            "email": args.email,
+            "medical_certificate": args.medical_certificate
+        }
+
+        for key in ["street", "city", "postal_code", "country", "username", "password", "medical_certificate"]:
+            value = getattr(args, key)
+            if value is not None:
+                data[key] = getattr(args, key)
+
+        res = requests.post(url + '/members', json=data, auth=auth)
+        coach = json_response(res)
+        show_person(coach)
+    elif args.action in ['update_member', 'modify_member']:
+
+        person_id = args.identifier
+
+        data = {}
+        for key in ["firstname", "lastname", "email", "street", "city", "postal_code", "country", "username",
+                    "password", "medical_certificate"]:
+            value = getattr(args, key)
+            if value is not None:
+                data[key] = getattr(args, key)
+        if len(data) == 0:
+            print("No update data")
+            sys.exit(1)
+        res = requests.put(url + '/members/' + person_id, json=data, auth=auth)
+        person = json_response(res)
+        show_person(person)
+    elif args.action in ['remove_member', 'delete_member', 'rm_member']:
+        person_id = args.identifier
+        res = requests.delete(url + '/members/' + person_id, auth=auth)
+        json_response(res)
+        print("Member deleted")
     else:
         parser.print_help()
+        print('There is a difference between person, member and coach:')
+        print(' - A person represents both members and coaches')
+        print(' - A member is someone from the association')
+        print(' - A coach teaches a sport')
 
 
 def json_response(response):
