@@ -2,7 +2,7 @@ from model.mapping import Base, generate_id
 from model.mapping.linkLessonMember import LinkLessonMember
 import uuid
 
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
 
@@ -15,6 +15,8 @@ class Lesson(Base):
     start_time = Column(Integer, nullable=False)
     end_time = Column(Integer, nullable=False)
     level = Column(String(50), nullable=False)
+    coach_id = Column(String(36), ForeignKey('coach.id'))
+    coach = relationship("Coach", back_populates="lessons")
     members = relationship('LinkLessonMember', back_populates = 'lesson')
 
     def __repr__(self):

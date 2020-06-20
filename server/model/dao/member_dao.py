@@ -77,7 +77,7 @@ class MemberDAO(DAO):
 
     def delete_lesson(self, member: Member, lesson: Lesson, session):
         for link in member.lessons:
-            if link.lesson == lesson:
+            if link == lesson:
                 member.lessons.remove(link)
                 session.delete(link)
                 session.flush()

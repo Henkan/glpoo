@@ -23,5 +23,5 @@ class Member(Person):
         _dict['medical_certificate'] = self.medical_certificate
         _dict['lessons'] = []
         for link in self.lessons:
-            _dict['lessons'].append({"date": link.lesson.date})
+            _dict['lessons'].append({"date": link.date})
         return _dict

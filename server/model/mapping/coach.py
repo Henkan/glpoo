@@ -1,6 +1,7 @@
 from model.mapping.person import Person
 
 from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy.orm import relationship
 
 class Coach(Person):
     __tablename__ = 'coach'
@@ -9,6 +10,8 @@ class Coach(Person):
 
     contract = Column(String(50), nullable=False)
     degree = Column(String(50), nullable=False)
+
+    lessons = relationship("Lesson", back_populates="coach")
 
     __mapper_args__ = {
         'polymorphic_identity': 'coach',
@@ -21,4 +24,9 @@ class Coach(Person):
         _dict = super().to_dict()
         _dict['contract'] = self.contract
         _dict['degree'] = self.degree
+        _dict['lessons'] = []
+
+        for link in self.lessons:
+            _dict['lessons'].append({"date": link.date})
+
         return _dict

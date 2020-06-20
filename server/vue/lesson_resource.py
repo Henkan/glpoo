@@ -79,6 +79,30 @@ def delete_lesson(lesson_id=None):
         return _error_response(str(e), code=400)
 
 
+@lesson_resource.route('/lesson/<string:lesson_id>/coach/<string:coach_id>', methods=['PUT'])
+def add_coach_lesson(lesson_id=None, coach_id=None):
+    lesson_controller = _create_lesson_controller()
+    try:
+        lesson_controller.add_coach_lesson(lesson_id, coach_id)
+        return _json_response('coach added', code=200)
+    except ResourceNotFound:
+        return _error_response("Coach cannot be add", code=404)
+    except Error as e:
+        return _error_response(str(e), code=400)
+
+
+@lesson_resource.route('/lesson/<string:lesson_id>/coach/<string:coach_id>', methods=['DELETE'])
+def delete_coach_lesson(lesson_id=None, coach_id=None):
+    lesson_controller = _create_lesson_controller()
+    try:
+        lesson_controller.delete_coach_lesson(lesson_id, coach_id)
+        return _json_response('coach delete', code=204)
+    except ResourceNotFound:
+        return _error_response("Coach is not deleted", code=404)
+    except Error as e:
+        return _error_response(str(e), code=400)
+
+
 def _json_response(data, code=200):
     return Response(json.dumps(data), content_type="application/json", status=code)
 

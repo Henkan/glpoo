@@ -2,6 +2,7 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from model.mapping.lesson import Lesson
+from model.mapping.coach import Coach
 from model.dao.dao import DAO
 
 from exceptions import Error, ResourceNotFound
@@ -67,3 +68,16 @@ class LessonDAO(DAO):
             self._database_session.delete(entity)
         except SQLAlchemyError as e:
             raise Error(str(e))
+
+    def add_coach(self, lesson: Lesson, coach: Coach, session):
+        lesson.coach_id = coach.id
+        coach.lessons.append(lesson)
+        session.flush()
+
+    def delete_coach(self, lesson: Lesson, coach: Coach, session):
+        for link_lesson in coach.lessons:
+            if link_lesson == lesson:
+                coach.lessons.remove(link_lesson)
+                lesson.coach_id = None
+                session.flush()
+                break
