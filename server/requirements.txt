@@ -1,2 +1,3 @@
 sqlalchemy
 flask
+Flask-HTTPAuth
