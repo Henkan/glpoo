@@ -3,6 +3,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from model.mapping.lesson import Lesson
 from model.mapping.coach import Coach
+from model.mapping.sport import Sport
 from model.dao.dao import DAO
 
 from exceptions import Error, ResourceNotFound
@@ -79,5 +80,18 @@ class LessonDAO(DAO):
             if link_lesson == lesson:
                 coach.lessons.remove(link_lesson)
                 lesson.coach_id = None
+                session.flush()
+                break
+
+    def add_sport(self, lesson: Lesson, sport: Sport, session):
+        lesson.sport_id = sport.id
+        sport.lessons.append(lesson)
+        session.flush()
+
+    def delete_sport(self, lesson: Lesson, sport: Sport, session):
+        for link_lesson in sport.lessons:
+            if link_lesson == lesson:
+                sport.lessons.remove(link_lesson)
+                lesson.sport_id = None
                 session.flush()
                 break

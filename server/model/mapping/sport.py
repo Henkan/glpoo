@@ -14,17 +14,22 @@ class Sport(Base):
     description = Column(String(256), nullable=True)
 
     persons = relationship("SportAssociation", back_populates="sport")
+    lessons = relationship("Lesson", back_populates="sport")
 
     def __repr__(self):
         return "<Sport(%s : %s)>" % (self.name, self.description)
 
     def to_dict(self):
-        return {
+        data = {
             "id": self.id,
             "name": self.name,
-            "description": self.description
+            "description": self.description,
+            "lessons": []
         }
+        for link_lesson in self.lessons:
+            data.get("lessons").append({"date": link_lesson.date})
 
+        return data
 
 class SportAssociation(Base):
     __tablename__ = 'sportassociation'

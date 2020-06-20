@@ -16,7 +16,9 @@ class Lesson(Base):
     end_time = Column(Integer, nullable=False)
     level = Column(String(50), nullable=False)
     coach_id = Column(String(36), ForeignKey('coach.id'))
+    sport_id = Column(String(36), ForeignKey('sport.id'))
     coach = relationship("Coach", back_populates="lessons")
+    sport = relationship("Sport", back_populates="lessons")
     members = relationship('LinkLessonMember', back_populates = 'lesson')
 
     def __repr__(self):
@@ -28,6 +30,8 @@ class Lesson(Base):
             "date":self.date,
             "start_time":self.start_time,
             "end_time":self.end_time,
-            "level":self.level
+            "level":self.level,
+            "coach":self.coach_id,
+            "sport":self.sport_id
         }
         return data

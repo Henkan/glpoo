@@ -2,6 +2,7 @@ import re
 
 from model.dao.lesson_dao import LessonDAO
 from model.dao.coach_dao import CoachDAO
+from model.dao.sport_dao import SportDAO
 from exceptions import Error, InvalidData
 
 
@@ -80,6 +81,22 @@ class LessonController:
             coach_dao = CoachDAO(session)
             coach = coach_dao.get(coach_id)
             lesson_dao.delete_coach(lesson, coach, session)
+
+    def add_sport_lesson(self, lesson_id: str, sport_id: str):
+        with self._database_engine.new_session() as session:
+            lesson_dao = LessonDAO(session)
+            lesson = lesson_dao.get(lesson_id)
+            sport_dao = SportDAO(session)
+            sport = sport_dao.get(sport_id)
+            lesson_dao.add_sport(lesson, sport, session)
+
+    def delete_sport_lesson(self, lesson_id: str, sport_id: str):
+        with self._database_engine.new_session() as session:
+            lesson_dao = LessonDAO(session)
+            lesson = lesson_dao.get(lesson_id)
+            sport_dao = SportDAO(session)
+            sport = sport_dao.get(sport_id)
+            lesson_dao.delete_sport(lesson, sport, session)
 
     def _check_profile_data(self, data: dict, update=False):
         mandatories = {
