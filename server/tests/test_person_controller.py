@@ -3,9 +3,12 @@ import uuid
 
 from exceptions import Error, InvalidData, ResourceNotFound
 from controller.person_controller import PersonController
+from controller.sport_controller import SportController
 from model.database import DatabaseEngine
 from model.mapping.person import Person
 from model.mapping.user import User
+from model.mapping.sport import Sport
+from model.mapping.sport_association import SportAssociation
 
 
 class TestPersonController(unittest.TestCase):
@@ -30,6 +33,12 @@ class TestPersonController(unittest.TestCase):
                                     admin=False)
                           )
             session.add(john)
+
+            # Sport to test person-sport association
+            swimming = Sport(id=str(uuid.uuid4()), name="Swimming", description="Water", persons=[])
+            session.add(swimming)
+            session.flush()
+
             session.flush()
             cls.john_id = john.id
 
@@ -117,6 +126,23 @@ class TestPersonController(unittest.TestCase):
         self.assertEqual(person['firstname'], "john")
         self.assertEqual(person['lastname'], "do")
         self.assertEqual(person['id'], self.john_id)
+
+    def test_add_delete_sport(self):
+        # Test to add a sport to a person
+        sport_controller = SportController(self._database_engine)
+        sport = sport_controller.search_sport("Swimming")
+
+        # Add
+        self.person_controller.add_person_sport(self.john_id, sport.get('id'), "Master")
+        person = self.person_controller.get_person_by_username("john")
+        sport = sport_controller.search_sport("Swimming")
+        self.assertNotEqual(person.get('sports'), [])
+
+        # Delete
+        self.person_controller.delete_person_sport(self.john_id, sport.get('id'))
+        person = self.person_controller.get_person_by_username("john")
+        sport = sport_controller.search_sport("Swimming")
+        self.assertEqual(person.get('sports'), [])
 
 
 if __name__ == '__main__':
