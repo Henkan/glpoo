@@ -9,6 +9,10 @@ from model.mapping.person import Person
 from model.mapping.user import User
 from model.mapping.sport import Sport
 from model.mapping.sport_association import SportAssociation
+from model.mapping.linkLessonMember import LinkLessonMember
+from model.mapping.lesson import Lesson
+from model.mapping.member import Member
+from model.mapping.coach import Coach
 
 
 class TestPersonController(unittest.TestCase):
