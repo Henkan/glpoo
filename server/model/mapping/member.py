@@ -1,5 +1,5 @@
 from model.mapping.person import Person
-from model.mapping.linkLessonMember import LinkLessonMember
+from model.mapping.link_lesson_member import LinkLessonMember
 
 from sqlalchemy import Column, String, ForeignKey, Boolean, Integer
 from sqlalchemy.orm import relationship

@@ -4,7 +4,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from model.mapping.member import Member
 from model.dao.dao import DAO
 from model.mapping.lesson import Lesson
-from model.mapping.linkLessonMember import LinkLessonMember
+from model.mapping.link_lesson_member import LinkLessonMember
 
 from exceptions import Error, ResourceNotFound
 

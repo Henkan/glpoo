@@ -1,5 +1,5 @@
 from model.mapping import Base, generate_id
-from model.mapping.linkLessonMember import LinkLessonMember
+from model.mapping.link_lesson_member import LinkLessonMember
 import uuid
 
 from sqlalchemy import Column, String, Integer, ForeignKey
