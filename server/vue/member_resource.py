@@ -14,6 +14,8 @@ member_resource = Blueprint("member_resource", __name__)
 @member_resource.route('/member', methods=['POST'])
 def create_member():
     data = request.get_json()
+    if 'medical_certificate' in data:
+        data['medical_certificate'] = True if data['medical_certificate'] == 'true' else False
     if data is None or len(data) == 0:
         return _error_response("Missing data", code=400)
     member_controller = _create_member_controller()

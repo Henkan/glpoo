@@ -335,15 +335,14 @@ def main():
             "firstname": args.firstname,
             "lastname": args.lastname,
             "email": args.email,
-            "medical_certificate": args.medical_certificate
+            "medical_certificate": True if args.medical_certificate in ['yes', 'true', '1'] else False
         }
-
         for key in ["street", "city", "postal_code", "country", "username", "password", "medical_certificate"]:
             value = getattr(args, key)
             if value is not None:
                 data[key] = getattr(args, key)
 
-        res = requests.post(url + '/members', json=data, auth=auth)
+        res = requests.post(url + '/member', json=data, auth=auth)
         coach = json_response(res)
         show_person(coach)
     elif args.action in ['update_member', 'modify_member']:
@@ -396,7 +395,7 @@ def show_person(person):
     print(person['firstname'].capitalize(), person['lastname'].capitalize())
     print("Id: ", person['id'])
     print("Email:", person['email'])
-    if person['address'] is not None:
+    if 'address' in person:
         print("Address: {0}, {1} {2}, {3}".format(person['address']['street'], person['address']['postal_code'],
                                                   person['address']['city'], person['address']['country']))
 
