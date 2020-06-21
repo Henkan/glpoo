@@ -5,6 +5,8 @@ from controller.lesson_controller import LessonController
 from model.database import DatabaseEngine
 from exceptions import Error, ResourceNotFound
 
+from vue.authentication_resource import auth, check_user_has_rights
+
 lesson_resource = Blueprint("lesson_resource", __name__)
 
 
@@ -12,6 +14,7 @@ lesson_resource = Blueprint("lesson_resource", __name__)
 
 
 @lesson_resource.route('/lesson', methods=['POST'])
+@auth.login_required(role='admin')
 def create_lesson():
     data = request.get_json()
     if data is None or len(data) == 0:
@@ -55,6 +58,7 @@ def get_lesson(lesson_id=None):
 
 
 @lesson_resource.route('/lesson/<string:lesson_id>', methods=['PUT'])
+@auth.login_required(role='admin')
 def update_lesson(lesson_id=None):
     lesson_controller = _create_lesson_controller()
     data = request.get_json()
@@ -68,6 +72,7 @@ def update_lesson(lesson_id=None):
 
 
 @lesson_resource.route('/lesson/<string:lesson_id>', methods=['DELETE'])
+@auth.login_required(role='admin')
 def delete_lesson(lesson_id=None):
     lesson_controller = _create_lesson_controller()
     try:
@@ -80,6 +85,7 @@ def delete_lesson(lesson_id=None):
 
 
 @lesson_resource.route('/lesson/<string:lesson_id>/coach/<string:coach_id>', methods=['PUT'])
+@auth.login_required(role='admin')
 def add_coach_lesson(lesson_id=None, coach_id=None):
     lesson_controller = _create_lesson_controller()
     try:
@@ -92,6 +98,7 @@ def add_coach_lesson(lesson_id=None, coach_id=None):
 
 
 @lesson_resource.route('/lesson/<string:lesson_id>/coach/<string:coach_id>', methods=['DELETE'])
+@auth.login_required(role='admin')
 def delete_coach_lesson(lesson_id=None, coach_id=None):
     lesson_controller = _create_lesson_controller()
     try:
@@ -104,6 +111,7 @@ def delete_coach_lesson(lesson_id=None, coach_id=None):
 
 
 @lesson_resource.route('/lesson/<string:lesson_id>/sport/<string:sport_id>', methods=['PUT'])
+@auth.login_required(role='admin')
 def add_sport_lesson(lesson_id=None, sport_id=None):
     lesson_controller = _create_lesson_controller()
     try:
@@ -116,6 +124,7 @@ def add_sport_lesson(lesson_id=None, sport_id=None):
 
 
 @lesson_resource.route('/lesson/<string:lesson_id>/sport/<string:sport_id>', methods=['DELETE'])
+@auth.login_required(role='admin')
 def delete_sport_lesson(lesson_id=None, sport_id=None):
     lesson_controller = _create_lesson_controller()
     try:
